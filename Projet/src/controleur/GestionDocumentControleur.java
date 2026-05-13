@@ -1,7 +1,6 @@
 package controleur;
 
 import dao.DocumentDao;
-
 import modele.Document;
 import vue.GestionDocView;
 
@@ -89,6 +88,13 @@ public class GestionDocumentControleur {
                 return;
             }
 
+            if (documentDao.titreExiste(titre)) {
+                JOptionPane.showMessageDialog(vue,
+                    "Un document avec ce titre existe déjà.",
+                    "Titre indisponible", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             documentEnCours = new Document();
             documentEnCours.setTitre(titre);
             documentEnCours.setAuteur(auteur);
@@ -140,6 +146,8 @@ public class GestionDocumentControleur {
             "Modifier le document", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
+            String nouveauTitre = txtTitre.getText().trim();
+
             int qte;
             try {
                 qte = Integer.parseInt(txtQte.getText().trim());
@@ -150,7 +158,15 @@ public class GestionDocumentControleur {
                 return;
             }
 
-            d.setTitre(txtTitre.getText().trim());
+            // Vérification unicité du titre uniquement si le titre a changé
+            if (!nouveauTitre.equals(d.getTitre()) && documentDao.titreExiste(nouveauTitre)) {
+                JOptionPane.showMessageDialog(vue,
+                    "Un document avec ce titre existe déjà.",
+                    "Titre indisponible", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            d.setTitre(nouveauTitre);
             d.setAuteur(txtAuteur.getText().trim());
             d.setTypeDoc(txtType.getText().trim());
             d.setNbExemplaires(qte);
