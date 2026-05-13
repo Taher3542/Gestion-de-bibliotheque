@@ -1,7 +1,6 @@
 package controleur;
 
 import dao.AdherentDao;
-
 import modele.Adherent;
 import vue.GestionAdherentView;
 
@@ -45,7 +44,7 @@ public class GestionAdherentControleur {
                 a.getId(),
                 a.getNom(),
                 a.getLogin(),
-                "••••••••",   
+                "••••••••",
                 a.getDateInscription()
             });
         }
@@ -75,6 +74,14 @@ public class GestionAdherentControleur {
             if (nom.isEmpty() || login.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(vue, "Tous les champs sont obligatoires.",
                     "Erreur", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Vérification unicité du login
+            if (adherentDao.loginExiste(login)) {
+                JOptionPane.showMessageDialog(vue,
+                    "Ce login est déjà utilisé par un autre adhérent.",
+                    "Login indisponible", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
@@ -128,8 +135,17 @@ public class GestionAdherentControleur {
             "Modifier l'adhérent", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
+            String nouveauLogin = txtLogin.getText().trim();
+
+            if (!nouveauLogin.equals(a.getLogin()) && adherentDao.loginExiste(nouveauLogin)) {
+                JOptionPane.showMessageDialog(vue,
+                    "Ce login est déjà utilisé par un autre adhérent.",
+                    "Login indisponible", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             a.setNom(txtNom.getText().trim());
-            a.setLogin(txtLogin.getText().trim());
+            a.setLogin(nouveauLogin);
             String newPass = new String(txtPassword.getPassword()).trim();
             if (!newPass.isEmpty()) a.setPassword(newPass);
 
@@ -193,6 +209,6 @@ public class GestionAdherentControleur {
             "Succès", JOptionPane.INFORMATION_MESSAGE);
 
         adherentEnCours = null;
-        chargerAdherents(); 
+        chargerAdherents();
     }
 }
