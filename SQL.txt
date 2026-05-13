@@ -1,0 +1,47 @@
+CREATE DATABASE IF NOT EXISTS bibliotheque_db;
+
+
+CREATE TABLE bibliotheque_db.adherent (
+    id_adherent INT PRIMARY KEY AUTO_INCREMENT,
+    login VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    nom VARCHAR(100),
+    date_inscription DATE
+);
+
+
+CREATE TABLE bibliotheque_db.bibliothecaire (
+    id_biblio INT PRIMARY KEY AUTO_INCREMENT,
+    login VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    nom VARCHAR(100),
+    matricule VARCHAR(20)
+);
+
+
+CREATE TABLE bibliotheque_db.document (
+    id_doc INT PRIMARY KEY AUTO_INCREMENT,
+    titre VARCHAR(150) NOT NULL,
+    auteur VARCHAR(100),
+    type_doc ENUM('Livre', 'Magazine', 'Journal', 'BD') DEFAULT 'Livre',
+    nb_exemplaires INT DEFAULT 1
+);
+
+
+CREATE TABLE bibliotheque_db.pret (
+    id_pret INT PRIMARY KEY AUTO_INCREMENT,
+    id_adherent INT,
+    id_doc INT,
+    date_pret DATE NOT NULL,
+    date_retour_prevue DATE NOT NULL,
+    date_retour_effective DATE,
+    -- Contraintes avec Cascade
+    CONSTRAINT fk_adherent 
+        FOREIGN KEY (id_adherent) 
+        REFERENCES bibliotheque_db.adherent(id_adherent) 
+        ON DELETE CASCADE,
+    CONSTRAINT fk_document 
+        FOREIGN KEY (id_doc) 
+        REFERENCES bibliotheque_db.document(id_doc) 
+        ON DELETE CASCADE
+);
