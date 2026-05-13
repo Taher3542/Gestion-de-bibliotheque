@@ -82,6 +82,20 @@ public class AdherentDao implements Idao<Adherent> {
             e.printStackTrace();
         }
     }
+    public boolean loginExiste(String login) {
+        String sql = "SELECT COUNT(*) FROM adherent WHERE login = ?";
+        try (Connection conn = SingletonConnection.getInstance();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, login);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     @Override
     public void delete(int id) {
